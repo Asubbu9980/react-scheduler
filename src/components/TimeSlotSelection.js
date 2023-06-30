@@ -13,7 +13,9 @@ const TimeSlotSelection = (props) => {
     const [fromTime, setFromTime] = useState(null);
     const [toTime, setToTime] = useState(null);
     const [open, setOpen] = useState(false);
-    const [index, setIndex] =  useState(null);
+    const [index, setIndex] = useState(null);
+
+
     const handleClose = () => {
         setOpen(false);
         const selectedFromTime = fromTime ? format(fromTime.$d, 'HH:mm') : null;
@@ -26,47 +28,40 @@ const TimeSlotSelection = (props) => {
     const handleTimeChange = (index) => {
         setOpen(true);
         setIndex(index);
-       
     };
-    useEffect(()=>{
-        if(selectedTimeSlots.length <= 0){
-            setSelectedTimeSlots(props?.selectedDays?.map((day) => ({ day, timeSlots: [] })));
+    useEffect(() => {
+        const updatedTimeslots = [...selectedTimeSlots];
+        // Iterate over each day name in array1
+        for (const day of props.selectedDays) {
+            // Check if the day is already present in array2
+            const existingDay = selectedTimeSlots.find(item => item.day === day);
+            // If the day is not present, push it to array2
+            if (!existingDay) {
+                updatedTimeslots.push({ day: day, timeSlots: [] });
+            }
         }
-        else{
-            // var filteredKeywords = props.selectedDays.filter((day, i) => selectedTimeSlots[i].day.includes(day));
-            const nonMatchingDays = props.selectedDays.filter(day1 =>
-                !selectedTimeSlots.some(item => day1 === item.day )
-              );
-            console.log('filteredKeywords',nonMatchingDays, selectedTimeSlots);
-            const updatedSchedule = [...selectedTimeSlots];
-            nonMatchingDays.forEach(day => {
-                updatedSchedule.push({ day: day, timeSlots: [] });
-              });
-              console.log('updatedSchedule',updatedSchedule);
-            // updatedSchedule.push(nonMatchingDays?.map((day) => ({ day, timeSlots: [] })));
-            setSelectedTimeSlots(updatedSchedule);
-        }
-       
-    },[props?.selectedDays])
+        // Output array
+        const updatedTimeslots2 = updatedTimeslots.filter(item => props.selectedDays.includes(item.day));
+        setSelectedTimeSlots(updatedTimeslots2);
+    }, [props?.selectedDays]);
 
-    console.log('props', selectedTimeSlots, props?.selectedDays);
     return (
-        <div>
-            {open === false && selectedTimeSlots.length>0 && selectedTimeSlots.map((x, index) => {
-                return <div style={{ marginLeft: '8px', marginTop: '8px' }}><Box component="span" sx={{ p: 1, border: '1px solid grey', margin: 1,fontFamily: 'sans-serif' }}>
+        <div style={{ marginTop: '8px' }}>
+            {props.selectedOption == 'weekDays' && open === false && selectedTimeSlots.length > 0 && selectedTimeSlots.map((x, index) => {
+                return <div style={{ marginLeft: '8px', paddingTop: '8px' }}><Box component="span" sx={{ p: 1, border: '1px solid grey', margin: 1, fontFamily: 'sans-serif' }}>
                     {x?.day}
                 </Box>
                     {x?.timeSlots?.map((y) => {
-                        return<Box component="span" sx={{ p: 1, border: '1px solid grey', margin: '4px', fontFamily: 'sans-serif' }}>
+                        return <Box component="span" sx={{ p: 1, border: '1px solid grey', margin: '4px', fontFamily: 'sans-serif' }}>
                             {y}
                         </Box>
                     })}
-                    {x?.timeSlots.length < 4 && <IconButton aria-label="" onClick={(event) => handleTimeChange(index)}>
-                         <Button ><Add /></Button>
-                     </IconButton>}
+                    {x?.timeSlots?.length < 4 && <IconButton aria-label="" onClick={() => handleTimeChange(index)}>
+                        <Add />
+                    </IconButton>}
                 </div>
             })}
-            {open &&
+            {(open || props?.selectedOption === '12hours') &&
                 <Grid container spacing={2}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <Grid item xs={12} md={5}>
