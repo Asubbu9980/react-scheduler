@@ -45,9 +45,13 @@ const TimeSlotSelection = (props) => {
         setSelectedTimeSlots(updatedTimeslots2);
     }, [props?.selectedDays]);
 
+    useEffect(()=>{
+        setSelectedTimeSlots([]);
+    },[props.selectedOption])
+
     return (
         <div style={{ marginTop: '8px' }}>
-            {props.selectedOption == 'weekDays' && open === false && selectedTimeSlots.length > 0 && selectedTimeSlots.map((x, index) => {
+            {(props.selectedOption == 'weekDays' || props.selectedOption == 'weekends') && open === false && selectedTimeSlots.length > 0 && selectedTimeSlots.map((x, index) => {
                 return <div style={{ marginLeft: '8px', paddingTop: '8px' }}><Box component="span" sx={{ p: 1, border: '1px solid grey', margin: 1, fontFamily: 'sans-serif' }}>
                     {x?.day}
                 </Box>
