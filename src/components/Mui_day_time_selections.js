@@ -167,7 +167,7 @@ const WeekdaySelection = () => {
                 open={open}
             >
                 <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
-                    Sheduler
+                    Scheduler
                 </BootstrapDialogTitle>
                 <DialogContent dividers>
                     <Grid container spacing={2}>
@@ -222,7 +222,7 @@ const WeekdaySelection = () => {
                         <Grid item xs={12} md={4}>
                             <FormControlLabel
                                 control={<IOSSwitch sx={{ m: 1 }} defaultChecked />}
-                                label="All day"
+                                label="All days"
                             />
                         </Grid>
                         {(selectedOption === 'weekDays' || selectedOption === '12hours') &&
