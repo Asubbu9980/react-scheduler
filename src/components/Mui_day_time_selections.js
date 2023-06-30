@@ -10,17 +10,23 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { TimeField } from '@mui/x-date-pickers';
 import Switch from '@mui/material/Switch';
+
 // component imports
 import TimeSlotSelection from './TimeSlotSelection'
 
 
 const useStyles = makeStyles((theme) => ({
     weekdayButton: {
-        borderRadius: '50%',
-        padding: theme.spacing(1),
-        marginRight: theme.spacing(1),
+        borderLeft: '1px solid #1976d2 !important',
+        border: '1px solid #1976d2 !important'
+    },
+    weekDayUnselect:{
+        borderLeft: '1px solid #e8e8e8 !important'
     }
 }));
+
+
+
 
 const IOSSwitch = styled((props) => (
     <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -125,8 +131,13 @@ const WeekdaySelection = () => {
     const [toDate, setToDate] = useState(null);
     const [fromTime, setFromTime] = useState(null);
     const [toTime, setToTime] = useState(null)
+    const [switchValue, setSwitchValue] = useState(false);
 
-
+    const handleSwitchChange = (event) => {
+        console.log('event.target.checked', event.target.checked)
+        setSwitchValue(event.target.checked);
+        setSelectedOption('')
+    };
     const handleDaySelection = (event, newSelectedDays) => {
         setSelectedDays(newSelectedDays);
     };
@@ -136,15 +147,19 @@ const WeekdaySelection = () => {
         { value: 'Tue', label: 'T' },
         { value: 'Wed', label: 'W' },
         { value: 'Thu', label: 'T' },
-        { value: 'Fri', label: 'F' },
+        { value: 'Fri', label: 'F' }
+    ];
+
+    const weekend = [
         { value: 'Sat', label: 'S' },
         { value: 'Sun', label: 'S' },
     ];
 
+
     const handleOptionChange = (event) => {
-      
-            setSelectedOption(event.target.value);
-       
+        setSelectedDays([]);
+        setSelectedOption(event.target.value);
+
     };
 
     const [open, setOpen] = React.useState(false);
@@ -213,53 +228,64 @@ const WeekdaySelection = () => {
                         </Grid>
                         <Grid item xs={12} md={8}>
                             <RadioGroup row value={selectedOption} onChange={handleOptionChange}>
-                                <FormControlLabel value="weekDays" control={<Radio />} label="Week days" />
-                                <FormControlLabel value="weekends" control={<Radio />} label="Only Weekends" />
+                                <FormControlLabel value="weekDays" disabled={switchValue} control={<Radio />} label="Week days" />
+                                <FormControlLabel value="weekends" disabled={switchValue} control={<Radio />} label="Only Weekends" />
                                 <FormControlLabel value="12hours" control={<Radio />} label="12 Hours" />
                                 <FormControlLabel value="24hours" control={<Radio />} label="24 hours" />
                             </RadioGroup>
                         </Grid>
                         <Grid item xs={12} md={4}>
                             <FormControlLabel
-                                control={<IOSSwitch sx={{ m: 1 }} defaultChecked />}
+                                control={<IOSSwitch sx={{ m: 1 }} checked={switchValue}
+                                    onChange={handleSwitchChange} />}
                                 label="All days"
                             />
                         </Grid>
-                        {(selectedOption === 'weekDays' || selectedOption === '12hours') &&
+                        {selectedOption !== '24hours' &&
                             <Fragment>
                                 <Grid item xs={12} md={12}>
-                                {selectedOption === 'weekDays' &&
-                                    <ToggleButtonGroup
-                                        value={selectedDays}
-                                        onChange={handleDaySelection}
-                                        aria-label="Weekday Selection"
-                                        size="small"
-                                        sx={{
-                                            marginBottom: '8px',
-                                            '& .Mui-selected': {
-                                                color: 'white !important',
-                                                backgroundColor: '#1976d2 !important',
-                                                borderLeft: '1px solid #1976d2 !important',
-                                                border: '1px solid #1976d2',
-
-                                            }
-                                        }}
-                                    >
-                                        {weekdays.map((weekday) => (
-                                            <ToggleButton sx={{
-                                                borderRadius: '999px !important',
-                                                width: '40px',
-                                                height: '40px',
-                                                marginRight: '5px',
-                                                borderLeft: '1px solid #e8e8e8 !important',
-                                            }} key={weekday.value} value={weekday.value} className={classes.weekdayButton}>
-                                                {weekday.label}
-                                            </ToggleButton>
-                                        ))}
-                                    </ToggleButtonGroup>}
+                                    {(selectedOption === 'weekDays' || selectedOption === 'weekends' )  &&
+                                        <ToggleButtonGroup
+                                            value={selectedDays}
+                                            onChange={handleDaySelection}
+                                            aria-label="Weekday Selection"
+                                            size="small"
+                                            sx={{
+                                                marginBottom: '8px',
+                                                '& .Mui-selected': {
+                                                    color: 'white !important',
+                                                    backgroundColor: '#1976d2 !important',
+                                                    borderLeft: '1px solid #1976d2 !important',
+                                                    border: '1px solid #1976d2',
+                                                }
+                                            }}
+                                        >
+                                            { weekdays.map((weekday) => (
+                                                <ToggleButton sx={{
+                                                    borderRadius: '999px !important',
+                                                    width: '40px',
+                                                    height: '40px',
+                                                    marginRight: '5px',
+                                                    borderLeft: '1px solid #e8e8e8',
+                                                }} key={weekday.value} value={weekday.value} className={selectedOption === 'weekDays' ? classes.weekdayButton : classes.weekDayUnselect}>
+                                                    {weekday.label}
+                                                </ToggleButton>
+                                            ))}
+                                            { weekend.map((weekday) => (
+                                                <ToggleButton sx={{
+                                                    borderRadius: '999px !important',
+                                                    width: '40px',
+                                                    height: '40px',
+                                                    marginRight: '5px',
+                                                    borderLeft: '1px solid #e8e8e8',
+                                                }} key={weekday.value} value={weekday.value} className={selectedOption === 'weekends' ? classes.weekdayButton :  classes.weekDayUnselect}>
+                                                    {weekday.label}
+                                                </ToggleButton>
+                                            ))}
+                                        </ToggleButtonGroup>}
 
                                 </Grid>
-                               <TimeSlotSelection selectedOption={selectedOption} selectedDays={selectedDays} />
+                                <TimeSlotSelection selectedOption={selectedOption} selectedDays={selectedDays} />
                             </Fragment>
 
                         }
