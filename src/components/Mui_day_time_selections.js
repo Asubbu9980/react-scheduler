@@ -1,17 +1,16 @@
 import React, { useState, PropTypes, Fragment } from 'react';
 //mui imports
-import { RadioGroup, FormControlLabel, Radio, Grid, Typography, TextField } from '@mui/material';
-import { ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { RadioGroup, FormControlLabel, Radio, Grid, Typography, TextField, ToggleButtonGroup, ToggleButton, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { makeStyles, styled } from '@mui/styles';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { TimeField } from '@mui/x-date-pickers';
 import Switch from '@mui/material/Switch';
+// component imports
 import TimeSlotSelection from './TimeSlotSelection'
 
 
@@ -122,12 +121,10 @@ const WeekdaySelection = () => {
     const classes = useStyles();
     const [selectedOption, setSelectedOption] = useState('');
     const [selectedDays, setSelectedDays] = useState([]);
-    const [selectedDate, setSelectedDate] = useState(null);
     const [fromDate, setFromDate] = useState(null);
     const [toDate, setToDate] = useState(null);
     const [fromTime, setFromTime] = useState(null);
-    const [toTime, setToTime] = useState(null);
-    const [showWeekDays, setShowWeekDays] = useState(false);
+    const [toTime, setToTime] = useState(null)
 
 
     const handleDaySelection = (event, newSelectedDays) => {
@@ -145,16 +142,10 @@ const WeekdaySelection = () => {
     ];
 
     const handleOptionChange = (event) => {
-        setSelectedOption(event.target.value);
-        if (event.target.value === 'weekDays') {
-            setShowWeekDays(true);
-        }
-        else {
-            setShowWeekDays(false);
-        }
+      
+            setSelectedOption(event.target.value);
+       
     };
-
-    console.log('selectedOption', selectedOption, selectedDays, selectedDate);
 
     const [open, setOpen] = React.useState(false);
 
@@ -164,7 +155,7 @@ const WeekdaySelection = () => {
     const handleClose = () => {
         setOpen(false);
     };
-
+    console.log('selectedOption', selectedOption);
     return (
         <div>
             <Button variant="outlined" onClick={handleClickOpen}>
@@ -183,28 +174,25 @@ const WeekdaySelection = () => {
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <Grid item xs={12} md={6}>
                                 <DemoContainer components={['DatePicker']}>
-                                    <DatePicker sx={{width: '100%'}} label="From Date"
+                                    <DatePicker sx={{ width: '100%' }} label="From Date"
                                         value={fromDate}
                                         onChange={(date) => setFromDate(date)}
-                                    // renderInput={(params) => <TextField {...params} />} 
                                     />
                                 </DemoContainer>
-                                {/* </LocalizationProvider> */}
                             </Grid>
                             <Grid item xs={12} md={6}>
-                                {/* <LocalizationProvider dateAdapter={AdapterDayjs}> */}
                                 <DemoContainer components={['DatePicker']}>
-                                    <DatePicker sx={{width: '100%'}} label="To Date"
+                                    <DatePicker sx={{ width: '100%' }} label="To Date"
                                         value={toDate}
                                         onChange={(date) => setToDate(date)}
                                         renderInput={(params) => <TextField {...params} />} />
                                 </DemoContainer>
 
                             </Grid>
-                            {!showWeekDays && <Fragment>
+                            {selectedOption === 'weekends' && <Fragment>
                                 <Grid item xs={12} md={6}>
                                     <DemoContainer components={['TimeField']}>
-                                        <TimeField sx={{width: '100%'}} label="From Time"
+                                        <TimeField sx={{ width: '100%' }} label="From Time"
                                             value={fromTime}
                                             onChange={(time) => setFromTime(time)}
                                             renderInput={(params) => <TextField {...params} />} />
@@ -212,7 +200,7 @@ const WeekdaySelection = () => {
                                 </Grid>
                                 <Grid item xs={12} md={6}>
                                     <DemoContainer components={['TimeField']}>
-                                        <TimeField sx={{width: '100%'}} label="To Time"
+                                        <TimeField sx={{ width: '100%' }} label="To Time"
                                             value={toTime}
                                             onChange={(time) => setToTime(time)}
                                             renderInput={(params) => <TextField {...params} />} />
@@ -227,6 +215,8 @@ const WeekdaySelection = () => {
                             <RadioGroup row value={selectedOption} onChange={handleOptionChange}>
                                 <FormControlLabel value="weekDays" control={<Radio />} label="Week days" />
                                 <FormControlLabel value="weekends" control={<Radio />} label="Only Weekends" />
+                                <FormControlLabel value="12hours" control={<Radio />} label="12 Hours" />
+                                <FormControlLabel value="24hours" control={<Radio />} label="24 hours" />
                             </RadioGroup>
                         </Grid>
                         <Grid item xs={12} md={4}>
@@ -235,27 +225,23 @@ const WeekdaySelection = () => {
                                 label="All day"
                             />
                         </Grid>
-                        {/* <Grid item xs={12} md={6}>
-                            <RadioGroup value={selectedOption} onChange={handleOptionChange}>
-                                <FormControlLabel value="weekDays" control={<Radio />} label="Week days" />
-                                <FormControlLabel value="weekends" control={<Radio />} label="Only Weekends" />
-                            </RadioGroup>
-
-                        </Grid> */}
-                        {showWeekDays &&
+                        {(selectedOption === 'weekDays' || selectedOption === '12hours') &&
                             <Fragment>
                                 <Grid item xs={12} md={12}>
+                                {selectedOption === 'weekDays' &&
                                     <ToggleButtonGroup
                                         value={selectedDays}
                                         onChange={handleDaySelection}
                                         aria-label="Weekday Selection"
                                         size="small"
                                         sx={{
+                                            marginBottom: '8px',
                                             '& .Mui-selected': {
                                                 color: 'white !important',
                                                 backgroundColor: '#1976d2 !important',
                                                 borderLeft: '1px solid #1976d2 !important',
-                                                border: '1px solid #1976d2'
+                                                border: '1px solid #1976d2',
+
                                             }
                                         }}
                                     >
@@ -270,22 +256,14 @@ const WeekdaySelection = () => {
                                                 {weekday.label}
                                             </ToggleButton>
                                         ))}
-                                    </ToggleButtonGroup>
+                                    </ToggleButtonGroup>}
 
                                 </Grid>
-                                {/* <Grid item xs={12} md={4}>
-                            <FormControlLabel
-                                control={<IOSSwitch sx={{ m: 1 }} defaultChecked />}
-                                label="All day"
-                            />
-                        </Grid> */}
-                                <TimeSlotSelection selectedDays={selectedDays} />
+                               <TimeSlotSelection selectedOption={selectedOption} selectedDays={selectedDays} />
                             </Fragment>
 
                         }
                     </Grid>
-
-
                 </DialogContent>
                 <DialogActions>
                     <Button autoFocus onClick={handleClose}>
